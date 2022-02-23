@@ -10,7 +10,7 @@ const port = process.env.PORT || 5000;
 var serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+   credential: admin.credential.cert(serviceAccount)
 });
 
 app.use(cors());
@@ -43,19 +43,18 @@ async function run() {
         const appointmentsCollection = database.collection('appointments');
         const usersCollection = database.collection('users');
 
-        app.get('/appointments', verifyToken, async (req, res) => {
+        app.get('/appointments', async (req, res) => {
             const email = req.query.email;
-            const date = req.query.date;
-
-            const query = { email: email, date: date }
-
+            const date =new Date(req.query.date).toLocaleDateString();
+            const query = { email: email, date: date };
             const cursor = appointmentsCollection.find(query);
             const appointments = await cursor.toArray();
             res.json(appointments);
         })
 
-        app.post('/appointments', async (req, res) => {
+        app.post('/appointments', verifyToken, async (req, res) => {
             const appointment = req.body;
+            console.log(appointment);
             const result = await appointmentsCollection.insertOne(appointment);
             res.json(result)
         });
