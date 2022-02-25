@@ -91,6 +91,11 @@ async function run() {
             const doctors = await cursor.toArray();
             res.json(doctors);
         });
+        app.get('/doctors/:id', async (req, res) => {
+            const query = { _id: ObjectId(req.params.id) }
+            const doctor = await doctorsCollection.findOne(query);
+            res.json(doctor);
+        });
 
         app.post('/doctors', async (req, res) => {
             const name = req.body.name;
